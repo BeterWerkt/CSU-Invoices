@@ -13,7 +13,7 @@ spl_autoload_register(function($sClassName) {
 
 $oCache = json_decode(file_get_contents(ROOT . 'cache.json'));
 
-$sPath = 'C:\Users\BeterWerktnl\OneDrive - BeterWerkt\BeterWerkt\Klanten\CSU\Betaalspecificaties\\';
+$sPath = getenv('OneDrive') . '\BeterWerkt\Klanten\CSU\Betaalspecificaties\\';
 
 $aFiles = scandir($sPath);
 
