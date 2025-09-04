@@ -89,6 +89,7 @@ th {
   text-align: left;
   background-color: #04AA6D;
   color: white;
+  padding-left: 5px;
 }
 
 tr:nth-child(even){background-color: #dadada;}
@@ -96,8 +97,15 @@ tr:nth-child(even){background-color: #dadada;}
 td {
     padding: 5px;
 }
+
+tfoot {
+    margin-top: 20px;
+}
 </style>
 STYLING;
+
+$fInvoiced = 0.0;
+$fPaid = 0.0;
 
 $sHTML .= '<table><tr><th>Factuur</th><th>Datum</th><th>Bedrag</th><th>Hoe lang geleden</th></tr>';
 
@@ -106,6 +114,18 @@ while(($aLine = fgetcsv($rFile, null, ';')) != false) {
     $sHTML .= '<tr>';
 
     $bPaid = in_array($aLine[0], $aPaidInvoices);
+
+    $sAmount = $aLine[9];
+
+    $sAmount = str_replace('.', '', $sAmount);
+    $sAmount = str_replace(',', '.', $sAmount);
+
+    
+
+    $fInvoiced += $sAmount;
+    if($bPaid) {
+        $fPaid += $sAmount;
+    }
 
     $sHTML .= '<td style="color: ' . ($bPaid ? 'green' : 'red') . '">';
     $sHTML .= $aLine[0];
@@ -130,6 +150,15 @@ while(($aLine = fgetcsv($rFile, null, ';')) != false) {
     }
 
 }
+
+$sHTML .= '<tfoot>';
+
+$sHTML .= '<tr><th colspan="2">Gefactureerd:</th><td colspan="2">&euro; ' . number_format($fInvoiced, 2, ',', '.') . '</td></tr>';
+$sHTML .= '<tr><th colspan="2">Betaald:</th><td colspan="2">&euro; ' . number_format($fPaid, 2, ',', '.') . '</td></tr>';
+$sHTML .= '<tr><th colspan="2">Openstaand:</th><td colspan="2">&euro; ' . number_format($fInvoiced - $fPaid, 2, ',', '.') . '</td></tr>';
+$sHTML .= '<tr><th colspan="2">% Betaald:</th><td colspan="2">' . number_format(($fPaid / $fInvoiced) * 100, 3, ',', '.') . '%</td></tr>';
+
+$sHTML .= '</tfoot>';
 
 $sHTML .= '</table>';
 
